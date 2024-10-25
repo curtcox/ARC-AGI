@@ -9,29 +9,29 @@ def load_problems(directory):
                 problems.append(json.load(file))
     return problems
 
-def attempt_problem(problem):
-    successes = 0
-    for pair in problem['train']:
-        if pair['input'] == pair['output']:
-            successes += 1
-        print(f"Training problem: {'Success' if pair['input'] == pair['output'] else 'Failure'}")
+def guess_output(problem):
+    # for pair in problem['train']:
+    #     consider pair['input'] produces pair['output']:
     for pair in problem['test']:
-        if pair['input'] == pair['output']:
-            successes += 1
-        print(f"Evaluation problem: {'Success' if pair['input'] == pair['output'] else 'Failure'}")
-    return successes
+        return pair['input']
+
+def attempt_problem(problem):
+    for pair in problem['test']:
+        return guess_output(problem) == pair['output']
 
 def main():
-    training_problems = load_problems('data/training')
-    evaluation_problems = load_problems('data/evaluation')
 
     total_successes = 0
 
+    training_problems = load_problems('data/training')
     for problem in training_problems:
-        total_successes += attempt_problem(problem)
+        if attempt_problem(problem):
+          total_successes += 1
 
+    evaluation_problems = load_problems('data/evaluation')
     for problem in evaluation_problems:
-        total_successes += attempt_problem(problem)
+        if attempt_problem(problem):
+           total_successes += 1
 
     print(f"Total number of successes: {total_successes}")
 
