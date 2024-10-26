@@ -12,41 +12,37 @@ def load_problems(directory) -> dict:
 def construct_output(input, invariants):
     return input
 
-def is_length_equal(train) -> bool:
-    for example in train:
-        if len(example['input']) != len(example['output']):
-            return False
-    return True
+def color_count(a:list) -> int:
+    colors = set()
+    for row in a:
+        for color in row:
+            colors.add(color)
+    return len(colors)
 
-def is_length_less_than(train) -> bool:
-    for example in train:
-        if len(example['input']) >= len(example['output']):
-            return False
-    return True
+# The examples are structured as follows:
+# {"train": [{"input": [[0, 0, 0, 0, 0,
+# Each example maps a list[list[integer]] to a list[list[integer]].
 
-def is_length_greater_than(train) -> bool:
-    for example in train:
-        if len(example['input']) <= len(example['output']):
-            return False
-    return True
-
-def find_invariants(problem) -> list:
+def find_invariants(problem) -> dict:
     invariants = {}
     train = problem['train']
-    invariants['length_equal']        = is_length_equal(train)
-    invariants['length_greater_than'] = is_length_greater_than(train)
-    invariants['length_less_than']    = is_length_less_than(train)
+    invariants['len(in)==len(out)']                 = all(len(example['input']) == len(example['output']) for example in train)
+    invariants['len(in)>len(out)']                  = all(len(example['input'])  > len(example['output']) for example in train)
+    invariants['len(in)<len(out)']                  = all(len(example['input'])  < len(example['output']) for example in train)
+    invariants['len(colors(in))==len(colors(out))'] = all(color_count(example['input']) == color_count(example['output']) for example in train)
     print(invariants)
     return invariants
 
 def guess_output(problem) -> list:
     for pair in problem['test']:
         return construct_output(pair['input'], find_invariants(problem))
+    raise ValueError("No test")
 
 def attempt_problem(name, problem) -> bool:
     print(f"Attempting : {name}")
     for pair in problem['test']:
         return guess_output(problem) == pair['output']
+    raise ValueError("No test")
 
 def main():
 
