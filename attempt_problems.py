@@ -19,6 +19,14 @@ def color_count(a:list) -> int:
             colors.add(color)
     return len(colors)
 
+def zero_count(a:list) -> int:
+    count = 0
+    for row in a:
+        for color in row:
+            if color == 0:
+                count += 1
+    return count
+
 # The examples are structured as follows:
 # {"train": [{"input": [[0, 0, 0, 0, 0,
 # Each example maps a list[list[integer]] to a list[list[integer]].
@@ -29,12 +37,15 @@ def check_that(train, comparison_func):
 def find_invariants(problem) -> dict:
     invariants = {}
     train = problem['train']
-    invariants['len(in)==len(out)']                 = check_that(train, lambda x, y: len(x) == len(y))
-    invariants['len(in)>len(out)']                  = check_that(train, lambda x, y: len(x) > len(y))
-    invariants['len(in)<len(out)']                  = check_that(train, lambda x, y: len(x) < len(y))
+    invariants['len(in)==len(out)']                 = check_that(train, lambda x, y:         len(x) ==         len(y))
+    invariants['len(in)>len(out)']                  = check_that(train, lambda x, y:         len(x)  >         len(y))
+    invariants['len(in)<len(out)']                  = check_that(train, lambda x, y:         len(x)  <         len(y))
     invariants['len(colors(in))==len(colors(out))'] = check_that(train, lambda x, y: color_count(x) == color_count(y))
-    invariants['len(colors(in))>len(colors(out))']  = check_that(train, lambda x, y: color_count(x) > color_count(y))
-    invariants['len(colors(in))<len(colors(out))']  = check_that(train, lambda x, y: color_count(x) < color_count(y))
+    invariants['len(colors(in))>len(colors(out))']  = check_that(train, lambda x, y: color_count(x)  > color_count(y))
+    invariants['len(colors(in))<len(colors(out))']  = check_that(train, lambda x, y: color_count(x)  < color_count(y))
+    invariants['zeros(in)==zeros(out)']             = check_that(train, lambda x, y:  zero_count(x) ==  zero_count(y))
+    invariants['zeros(in)>zeros(out)']              = check_that(train, lambda x, y:  zero_count(x)  >  zero_count(y))
+    invariants['zeros(in)<zeros(out)']              = check_that(train, lambda x, y:  zero_count(x)  <  zero_count(y))
     print(invariants)
     return invariants
 
