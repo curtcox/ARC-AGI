@@ -23,13 +23,16 @@ def color_count(a:list) -> int:
 # {"train": [{"input": [[0, 0, 0, 0, 0,
 # Each example maps a list[list[integer]] to a list[list[integer]].
 
+def check_that(train, comparison_func):
+    return all(comparison_func(example['input'], example['output']) for example in train)
+
 def find_invariants(problem) -> dict:
     invariants = {}
     train = problem['train']
-    invariants['len(in)==len(out)']                 = all(len(example['input']) == len(example['output']) for example in train)
-    invariants['len(in)>len(out)']                  = all(len(example['input'])  > len(example['output']) for example in train)
-    invariants['len(in)<len(out)']                  = all(len(example['input'])  < len(example['output']) for example in train)
-    invariants['len(colors(in))==len(colors(out))'] = all(color_count(example['input']) == color_count(example['output']) for example in train)
+    invariants['len(in)==len(out)']                 = check_that(train, lambda x, y: len(x) == len(y))
+    invariants['len(in)>len(out)']                  = check_that(train, lambda x, y: len(x) > len(y))
+    invariants['len(in)<len(out)']                  = check_that(train, lambda x, y: len(x) < len(y))
+    invariants['len(colors(in))==len(colors(out))'] = check_that(train, lambda x, y: color_count(x) == color_count(y))
     print(invariants)
     return invariants
 
