@@ -71,6 +71,36 @@ def width(a: list) -> int:
     """Get the width of the grid."""
     return len(a[0]) if a else 0
 
+def color_transitions(input_grid: list, output_grid: list) -> set:
+    """Compute the set of color transitions between input and output grids."""
+    transitions = set()
+    input_height = len(input_grid)
+    input_width = len(input_grid[0]) if input_grid else 0
+    output_height = len(output_grid)
+    output_width = len(output_grid[0]) if output_grid else 0
+
+    min_height = min(input_height, output_height)
+    min_width = min(input_width, output_width)
+
+    for i in range(min_height):
+        for j in range(min_width):
+            c_in = input_grid[i][j]
+            c_out = output_grid[i][j]
+            transitions.add((c_in, c_out))
+    return transitions
+
+def check_color_transitions_equal(train):
+    """Check if the set of color transitions is the same across all training examples."""
+    transitions_list = [color_transitions(example['input'], example['output']) for example in train]
+    first_transitions = transitions_list[0]
+    return all(transitions == first_transitions for transitions in transitions_list)
+
+def check_transition_cardinality_equal(train):
+    """Check if the cardinality of color transitions is the same across all training examples."""
+    counts = [len(color_transitions(example['input'], example['output'])) for example in train]
+    first_count = counts[0]
+    return all(count == first_count for count in counts)
+
 def check_that(train, comparison_func):
     """Check if a condition holds for all examples in the training data."""
     return all(comparison_func(example['input'], example['output']) for example in train)
@@ -98,6 +128,10 @@ def find_invariants(problem) -> dict:
     invariants['colors(in)>colors(out)']            = check_that(train, lambda x, y:  colors_set(x)  > colors_set(y))
     invariants['colors(in)<colors(out)']            = check_that(train, lambda x, y:  colors_set(x)  < colors_set(y))
     invariants['sum(colors(in))==sum(colors(out))'] = check_that(train, lambda x, y: sum_of_colors(x) == sum_of_colors(y))
+
+    # Color Transitions
+    invariants['transitions(in,out)']      = check_color_transitions_equal(train)
+    invariants['len(transitions(in,out))'] = check_transition_cardinality_equal(train)
 
     # Non-zero Cell Count Equality
     invariants['count(nonzero(in))==count(nonzero(out))'] = check_that(train, lambda x, y: non_zero_count(x) == non_zero_count(y))
