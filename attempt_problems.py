@@ -33,6 +33,8 @@ def find_invariants(problem) -> dict:
     invariants['len(in)>len(out)']                  = check_that(train, lambda x, y: len(x) > len(y))
     invariants['len(in)<len(out)']                  = check_that(train, lambda x, y: len(x) < len(y))
     invariants['len(colors(in))==len(colors(out))'] = check_that(train, lambda x, y: color_count(x) == color_count(y))
+    invariants['len(colors(in))>len(colors(out))']  = check_that(train, lambda x, y: color_count(x) > color_count(y))
+    invariants['len(colors(in))<len(colors(out))']  = check_that(train, lambda x, y: color_count(x) < color_count(y))
     print(invariants)
     return invariants
 
